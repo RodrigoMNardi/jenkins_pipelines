@@ -16,30 +16,6 @@ pipeline {
     }
 
     stages {
-        matrix {
-            axes {
-                axis {
-                    name 'RUBY_VERSION'
-                    values '3.4', '3.3'
-                }
-            }
-            stage('Checkout') {
-              agent {
-                  docker {
-                      image "ruby:${RUBY_VERSION}"
-                  }
-              }
-            steps {
-                deleteDir()
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: params.GIT_REF]],
-                    userRemoteConfigs: [[url: 'https://github.com/RodrigoMNardi/netdef-ci-github-app.git']]
-                ])
-            }
-          }
-        }
-
         stage('Start Postgres') {
             agent none
             steps {
@@ -53,7 +29,7 @@ pipeline {
             }
         }
 
-        stage('Ruby Matrix Pipeline') {
+        stage('Matrix Pipeline') {
             matrix {
                 axes {
                     axis {
@@ -67,6 +43,16 @@ pipeline {
                     }
                 }
                 stages {
+                    stage('Checkout') {
+                        steps {
+                            deleteDir()
+                            checkout([
+                                $class: 'GitSCM',
+                                branches: [[name: params.GIT_REF]],
+                                userRemoteConfigs: [[url: 'https://github.com/RodrigoMNardi/netdef-ci-github-app.git']]
+                            ])
+                        }
+                    }
                     stage('01 - Install bundler') {
                         steps {
                             sh 'gem install bundler -v 2.7.1'
