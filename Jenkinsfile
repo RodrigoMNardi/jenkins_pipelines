@@ -15,12 +15,6 @@ pipeline {
     }
 
     stages {
-        stage('Prepare Network') {
-            steps {
-                sh 'docker network create jenkins-net || true'
-            }
-        }
-
         stage('Checkout') {
             steps {
                 deleteDir()
@@ -84,7 +78,6 @@ pipeline {
     post {
         always {
             sh 'docker rm -f jenkins-postgres || true'
-            sh 'docker network rm jenkins-net || true'
             echo 'Pipeline done'
         }
         success {
