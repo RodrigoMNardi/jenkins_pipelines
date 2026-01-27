@@ -17,17 +17,18 @@ pipeline {
 
     stages {
         stage('Checkout') {
-                axes {
-                    axis {
-                        name 'RUBY_VERSION'
-                        values '3.4', '3.3'
-                    }
+          matrix {
+            axes {
+                axis {
+                    name 'RUBY_VERSION'
+                    values '3.4', '3.3'
                 }
-                agent {
-                    docker {
-                        image "ruby:${RUBY_VERSION}"
-                    }
+            }
+            agent {
+                docker {
+                    image "ruby:${RUBY_VERSION}"
                 }
+            }
             steps {
                 deleteDir()
                 checkout([
@@ -36,6 +37,7 @@ pipeline {
                     userRemoteConfigs: [[url: 'https://github.com/RodrigoMNardi/netdef-ci-github-app.git']]
                 ])
             }
+          }
         }
 
         stage('Start Postgres') {
