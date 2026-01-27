@@ -3,7 +3,11 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            agent any
+            agent {
+                docker {
+                    image 'ruby:3.4'
+                }
+            }
             steps {
                 deleteDir()
                 checkout([
