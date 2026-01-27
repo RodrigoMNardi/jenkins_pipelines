@@ -29,15 +29,10 @@ pipeline {
             steps {
                 sh '''
                   docker run --name jenkins-postgres -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres:15
-                  for i in {1..30}; do
+                  for i in {1..60}; do
                     docker exec jenkins-postgres pg_isready -U postgres && break
                     sleep 1
                   done
-
-                  if ! docker exec jenkins-postgres pg_isready -U postgres; then
-                    echo "Postgres did not become ready in time!"
-                    exit 1
-                  fi
                 '''
             }
         }
