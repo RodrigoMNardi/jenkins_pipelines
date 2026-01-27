@@ -9,8 +9,8 @@ pipeline {
         POSTGRES_USER = 'postgres'
         POSTGRES_PASSWORD = 'postgres'
         POSTGRES_DB = 'postgres'
-        POSTGRES_HOST = '172.17.0.1'
-        DATABASE_URL = 'postgres://postgres:postgres@172.17.0.1:5432'
+        POSTGRES_HOST = 'localhost'
+        DATABASE_URL = 'postgres://postgres:postgres@localhost:5432'
     }
 
     stages {
@@ -55,37 +55,7 @@ pipeline {
                     }
                     steps {
                         sh '''
-                          echo '
-test:
-adapter: postgresql
-host: 172.17.0.1
-database: postgres
-username: postgres
-password: postgres
-encoding: utf8
-pool: 10
-timeout: 5000
-
-production:
-adapter: postgresql
-host: 172.17.0.1
-database: postgres
-username: postgres
-password: postgres
-encoding: utf8
-pool: 10
-timeout: 5000
-
-development:
-adapter: postgresql
-host: 172.17.0.1
-database: postgres
-username: postgres
-password: postgres
-encoding: utf8
-pool: 10
-timeout: 5000' > config/database.yml
-                          cat config/database.yml
+                          cp database_template.yml config/database.yml
                           cp db/schema.rb db/schema.rb.bak
                           bundle exec rake db:migrate:reset
                           if ! cmp db/schema.rb db/schema.rb.bak >/dev/null 2>&1; then
