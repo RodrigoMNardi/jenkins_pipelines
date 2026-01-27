@@ -1,15 +1,11 @@
 pipeline {
-    agent {
-        docker {
-            image 'ruby:3.4'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
+    agent none
 
     stages {
         stage('Checkout') {
+            agent any
             steps {
-                deleteDir() // Limpa o workspace
+                deleteDir()
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: 'master']],
@@ -18,20 +14,15 @@ pipeline {
             }
         }
 
-        stage('Install bundler') {
+        stage('Install and Test') {
+            agent {
+                docker {
+                    image 'ruby:3.4'
+                }
+            }
             steps {
                 sh 'gem install bundler'
-            }
-         }
-
-        stage('Install dependencies') {
-            steps {
                 sh 'bundle install'
-            }
-        }
-
-        stage('Run Unit Tests') {
-            steps {
                 sh 'bundle exec rspec'
             }
         }
