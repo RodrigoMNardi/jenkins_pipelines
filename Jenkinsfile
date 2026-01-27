@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'ruby:3.3'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
     stages {
         stage('Checkout') {
@@ -10,6 +15,7 @@ pipeline {
 
         stage('Install dependencies') {
             steps {
+                sh 'gem install bundler'
                 sh 'bundle install'
             }
         }
