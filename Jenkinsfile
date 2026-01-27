@@ -20,6 +20,7 @@ pipeline {
             agent any
             steps {
                 sh '''
+                  docker rm -f jenkins-postgres || true
                   docker run --name jenkins-postgres -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres:15
                   for i in {1..60}; do
                     docker exec jenkins-postgres pg_isready -U postgres && break
