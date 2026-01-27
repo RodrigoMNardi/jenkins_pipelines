@@ -17,7 +17,7 @@ pipeline {
 
     stages {
         stage('Start Postgres') {
-            agent none
+            agent any
             steps {
                 sh '''
                   docker run --name jenkins-postgres -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres:15
