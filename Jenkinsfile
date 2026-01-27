@@ -9,19 +9,7 @@ pipeline {
         POSTGRES_USER = 'postgres'
         POSTGRES_PASSWORD = 'postgres'
         POSTGRES_DB = 'postgres'
-        POSTGRES_HOST = 'postgres'
-    }
-
-    services {
-        postgres {
-            image 'postgres:15'
-            env {
-                POSTGRES_USER = 'postgres'
-                POSTGRES_PASSWORD = 'postgres'
-                POSTGRES_DB = 'postgres'
-            }
-            options '--health-cmd="pg_isready -U postgres" --health-interval=10s --health-timeout=5s --health-retries=5'
-        }
+        POSTGRES_HOST = 'localhost'
     }
 
     stages {
@@ -48,10 +36,19 @@ pipeline {
             }
         }
 
+        stage('Start Postgres') {
+            steps {
+                sh '''
+                  docker run --name jenkins-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -p 5432:5432 -d postgres:15
+                  sleep 15
+                '''
+            }
+        }
+
         stage('Create DB') {
             environment {
                 RACK_ENV = 'test'
-                DATABASE_URL = 'postgres://postgres:postgres@postgres'
+                DATABASE_URL = 'postgres://postgres:postgres@localhost'
             }
             steps {
                 sh '''
@@ -70,6 +67,7 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
+                sh 'cp config_template.yml config.yml'
                 sh 'bundle exec rspec'
             }
         }
@@ -77,6 +75,7 @@ pipeline {
 
     post {
         always {
+            sh 'docker rm -f jenkins-postgres || true'
             echo 'Pipeline done'
         }
         success {
