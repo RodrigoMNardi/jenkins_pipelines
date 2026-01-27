@@ -21,9 +21,10 @@ pipeline {
                 deleteDir()
                 checkout([
                     $class: 'GitSCM',
-                    branches: [[name: 'master']],
+                    branches: [[name: 'main']], // Tente main se master não existir
                     userRemoteConfigs: [[url: 'https://github.com/RodrigoMNardi/netdef-ci-github-app.git']]
                 ])
+                sh 'ls -lR'
             }
         }
 
@@ -51,6 +52,7 @@ pipeline {
                 }
                 stage('Install gems') {
                     steps {
+                        sh 'ls -lR' // Diagnóstico: verifique se o Gemfile está aqui
                         sh 'bundle install'
                     }
                 }
