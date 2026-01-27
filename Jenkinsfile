@@ -7,9 +7,14 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout código do projeto') {
             steps {
-                checkout scm
+                deleteDir() // Limpa o workspace
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: 'master']],
+                    userRemoteConfigs: [[url: 'https://github.com/RodrigoMNardi/netdef-ci-github-app.git']]
+                ])
             }
         }
 
