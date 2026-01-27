@@ -26,7 +26,7 @@ pipeline {
                 deleteDir()
                 checkout([
                     $class: 'GitSCM',
-                    branches: [[name: 'master']], // Tente main se master não existir
+                    branches: [[name: 'master']],
                     userRemoteConfigs: [[url: 'https://github.com/RodrigoMNardi/netdef-ci-github-app.git']]
                 ])
             }
