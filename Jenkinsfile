@@ -1,13 +1,12 @@
 pipeline {
-    agent none
+    agent {
+        docker {
+            image 'ruby:3.4'
+        }
+    }
 
     stages {
         stage('Checkout') {
-            agent {
-                docker {
-                    image 'ruby:3.4'
-                }
-            }
             steps {
                 deleteDir()
                 checkout([
@@ -19,34 +18,18 @@ pipeline {
         }
 
         stage('Install bundler') {
-            agent {
-                docker {
-                    image 'ruby:3.4'
-                }
-            }
             steps {
                 sh 'gem install bundler -v 2.7.1'
             }
         }
 
         stage('Install gems') {
-            agent {
-                docker {
-                    image 'ruby:3.4'
-                }
-            }
             steps {
                 sh 'bundle install'
             }
         }
 
         stage('Unit Tests') {
-            agent {
-                docker {
-                    image 'ruby:3.4'
-                }
-            }
-
             steps {
                 sh 'bundle exec rspec'
             }
