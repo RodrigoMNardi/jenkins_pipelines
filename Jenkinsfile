@@ -46,7 +46,17 @@ pipeline {
 
         stage('Ruby Pipeline') {
             stages {
-                stage('01 - Create DB') {
+                stage('01 - Install bundler') {
+                    steps {
+                        sh 'gem install bundler -v 2.7.1'
+                    }
+                }
+                stage('02 - Install gems') {
+                    steps {
+                        sh 'bundle install'
+                    }
+                }
+                stage('03 - Create DB') {
                     environment {
                         RACK_ENV = 'test'
                     }
@@ -62,16 +72,6 @@ pipeline {
                             exit 1
                           fi
                         '''
-                    }
-                }
-                stage('02 - Install bundler') {
-                    steps {
-                        sh 'gem install bundler -v 2.7.1'
-                    }
-                }
-                stage('03 - Install gems') {
-                    steps {
-                        sh 'bundle install'
                     }
                 }
                 stage('04 - Unit Tests') {
