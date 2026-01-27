@@ -26,11 +26,20 @@ pipeline {
             }
         }
 
+        stage('Prepare Network') {
+            steps {
+                sh 'docker network inspect jenkins-net >/dev/null 2>&1 || docker network create jenkins-net'
+            }
+        }
+
         stage('Start Postgres') {
             steps {
                 sh '''
                   docker run --name jenkins-postgres --network jenkins-net -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres:15
-                  sleep 10
+                  for i in {1..30}; do
+                    docker exec jenkins-postgres pg_isready -U postgres && break
+                    sleep 1
+                  done
                 '''
             }
         }
