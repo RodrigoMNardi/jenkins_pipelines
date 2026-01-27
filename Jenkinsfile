@@ -8,28 +8,28 @@ pipeline {
             }
         }
 
-        stage('Build and Test in Docker') {
+        stage('Install dependencies') {
             steps {
-                script {
-                    def app = docker.build('ruby34-test', 'dockerfiles/ruby34')
-                    app.inside {
-                        sh 'bundle install'
-                        sh 'bundle exec rspec'
-                    }
-                }
+                sh 'bundle install'
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                sh 'bundle exec rspec'
             }
         }
     }
 
     post {
         always {
-            echo 'Pipeline finalizada'
+            echo 'Pipeline done'
         }
         success {
-            echo '✅ Testes passaram com sucesso'
+            echo 'SUCCESS!'
         }
         failure {
-            echo '❌ Falha nos testes'
+            echo '❌ FAILURE!'
         }
     }
 }
