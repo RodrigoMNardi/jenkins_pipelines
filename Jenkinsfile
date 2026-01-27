@@ -28,7 +28,8 @@ pipeline {
         stage('Start Postgres') {
             steps {
                 sh '''
-                    docker run --name jenkins-postgres -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres:15                  for i in {1..30}; do
+                  docker run --name jenkins-postgres -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres:15
+                  for i in {1..30}; do
                     docker exec jenkins-postgres pg_isready -U postgres && break
                     sleep 1
                   done
