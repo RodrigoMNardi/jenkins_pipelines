@@ -85,6 +85,7 @@ password: postgres
 encoding: utf8
 pool: 10
 timeout: 5000' > config/database.yml
+                          cat config/database.yml
                           cp db/schema.rb db/schema.rb.bak
                           bundle exec rake db:migrate:reset
                           if ! cmp db/schema.rb db/schema.rb.bak >/dev/null 2>&1; then
