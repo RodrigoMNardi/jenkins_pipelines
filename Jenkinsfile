@@ -30,23 +30,13 @@ pipeline {
             steps {
                 sh '''
                   docker run --name jenkins-postgres --network jenkins-net -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres:15
-                  sleep 15
+                  sleep 10
                 '''
             }
         }
 
         stage('Ruby Pipeline') {
             stages {
-                stage('Install bundler') {
-                    steps {
-                        sh 'gem install bundler -v 2.7.1'
-                    }
-                }
-                stage('Install gems') {
-                    steps {
-                        sh 'bundle install'
-                    }
-                }
                 stage('Create DB') {
                     environment {
                         RACK_ENV = 'test'
@@ -63,6 +53,16 @@ pipeline {
                             exit 1
                           fi
                         '''
+                    }
+                }
+                stage('Install bundler') {
+                    steps {
+                        sh 'gem install bundler -v 2.7.1'
+                    }
+                }
+                stage('Install gems') {
+                    steps {
+                        sh 'bundle install'
                     }
                 }
                 stage('Unit Tests') {
