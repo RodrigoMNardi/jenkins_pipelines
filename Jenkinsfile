@@ -10,8 +10,8 @@ pipeline {
         POSTGRES_USER = 'postgres'
         POSTGRES_PASSWORD = 'postgres'
         POSTGRES_DB = 'postgres'
-        POSTGRES_HOST = 'postgres'
-        DATABASE_URL = 'postgres://postgres:postgres@postgres:5432'
+        POSTGRES_HOST = '172.17.0.1'
+        DATABASE_URL = 'postgres://postgres:postgres@172.17.0.1:5432'
     }
 
     stages {
