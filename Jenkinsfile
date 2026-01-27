@@ -83,9 +83,11 @@ pipeline {
 
     post {
         always {
-            sh 'docker rm -f jenkins-postgres || true'
-            sh 'docker network rm jenkins-net || true'
-            echo 'Pipeline done'
+            node {
+                sh 'docker rm -f jenkins-postgres || true'
+                sh 'docker network rm jenkins-net || true'
+                echo 'Pipeline done'
+            }
         }
         success {
             echo 'SUCCESS!'
