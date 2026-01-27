@@ -16,20 +16,6 @@ pipeline {
     }
 
     stages {
-        stage('Start Postgres') {
-            agent any
-            steps {
-                sh '''
-                  docker rm -f jenkins-postgres || true
-                  docker run --name jenkins-postgres -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres:15
-                  for i in {1..60}; do
-                    docker exec jenkins-postgres pg_isready -U postgres && break
-                    sleep 1
-                  done
-                '''
-            }
-        }
-
         stage('Matrix Pipeline') {
             matrix {
                 axes {
@@ -43,7 +29,24 @@ pipeline {
                         image "ruby:${RUBY_VERSION}"
                     }
                 }
+                environment {
+                    POSTGRES_PORT = "${RUBY_VERSION == '3.4' ? '5433' : '5434'}"
+                    POSTGRES_CONTAINER = "jenkins-postgres-${RUBY_VERSION.replace('.', '')}"
+                    DATABASE_URL = "postgres://postgres:postgres@172.17.0.1:${POSTGRES_PORT}"
+                }
                 stages {
+                    stage('Start Postgres') {
+                        steps {
+                            sh '''
+                              docker rm -f $POSTGRES_CONTAINER || true
+                              docker run --name $POSTGRES_CONTAINER -p $POSTGRES_PORT:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres:15
+                              for i in {1..60}; do
+                                docker exec $POSTGRES_CONTAINER pg_isready -U postgres && break
+                                sleep 1
+                              done
+                            '''
+                        }
+                    }
                     stage('Checkout') {
                         steps {
                             deleteDir()
@@ -71,6 +74,8 @@ pipeline {
                         steps {
                             sh '''
                               cp database_template.yml config/database.yml
+                              sed -i "s/localhost/172.17.0.1/g" config/database.yml
+                              sed -i "s/5432/$POSTGRES_PORT/g" config/database.yml
                               cp db/schema.rb db/schema.rb.bak
                               bundle exec rake db:migrate:reset
                               if ! cmp db/schema.rb db/schema.rb.bak >/dev/null 2>&1; then
@@ -84,13 +89,17 @@ pipeline {
                     }
                     stage('04 - Unit Tests') {
                         environment {
-                            DATABASE_URL = 'postgres://postgres:postgres@172.17.0.1:5432'
+                            DATABASE_URL = "postgres://postgres:postgres@172.17.0.1:${POSTGRES_PORT}"
                         }
                         steps {
-                            sh 'sed -i \'s/localhost/172.17.0.1/g\' config/database.yml'
                             sh 'cp config_template.yml config.yml || true'
                             sh 'bundle exec rspec'
                         }
+                    }
+                }
+                post {
+                    always {
+                        sh 'docker rm -f $POSTGRES_CONTAINER || true'
                     }
                 }
             }
@@ -99,7 +108,6 @@ pipeline {
 
     post {
         always {
-            sh 'docker rm -f jenkins-postgres || true'
             echo 'Pipeline done'
         }
         success {
