@@ -14,23 +14,27 @@ pipeline {
             }
         }
 
-        stage('Install and Test') {
+        stage('Install bundler and dependencies') {
             agent {
                 docker {
                     image 'ruby:3.4'
                 }
             }
-            stage('Install bundler and dependencies') {
-              steps {
-                  sh 'gem install bundler'
-                  sh 'bundle install'
-              }
+            steps {
+                sh 'gem install bundler'
+                sh 'bundle install'
+            }
+        }
+
+        stage('Unit Tests') {
+            agent {
+                docker {
+                    image 'ruby:3.4'
+                }
             }
 
-            stage('Unit Tests') {
-              steps {
-                  sh 'bundle exec rspec'
-              }
+            steps {
+                sh 'bundle exec rspec'
             }
         }
     }
