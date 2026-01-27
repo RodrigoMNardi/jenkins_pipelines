@@ -68,6 +68,9 @@ pipeline {
                     }
                 }
                 stage('04 - Unit Tests') {
+                    environment {
+                        DATABASE_URL = 'postgres://postgres:postgres@localhost:5432'
+                    }
                     steps {
                         sh 'cp config_template.yml config.yml || true'
                         sh 'bundle exec rspec'
