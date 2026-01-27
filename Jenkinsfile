@@ -19,7 +19,7 @@ pipeline {
                 deleteDir()
                 checkout([
                     $class: 'GitSCM',
-                    branches: [[name: 'master']],
+                    branches: [[name: 'feature/jenkins']],
                     userRemoteConfigs: [[url: 'https://github.com/RodrigoMNardi/netdef-ci-github-app.git']]
                 ])
             }
