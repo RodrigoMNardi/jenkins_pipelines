@@ -25,7 +25,7 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install gems') {
             agent {
                 docker {
                     image 'ruby:3.4'
