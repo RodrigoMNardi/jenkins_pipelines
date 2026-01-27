@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'ruby:3.4'
+            args '--network jenkins-net'
+        }
+    }
 
     environment {
         POSTGRES_USER = 'postgres'
@@ -24,7 +29,6 @@ pipeline {
                     branches: [[name: 'master']], // Tente main se master não existir
                     userRemoteConfigs: [[url: 'https://github.com/RodrigoMNardi/netdef-ci-github-app.git']]
                 ])
-                sh 'ls -lR'
             }
         }
 
@@ -38,12 +42,6 @@ pipeline {
         }
 
         stage('Ruby Pipeline') {
-            agent {
-                docker {
-                    image 'ruby:3.4'
-                    args '--network jenkins-net'
-                }
-            }
             stages {
                 stage('Install bundler') {
                     steps {
@@ -52,7 +50,6 @@ pipeline {
                 }
                 stage('Install gems') {
                     steps {
-                        sh 'ls -lR' // Diagnóstico: verifique se o Gemfile está aqui
                         sh 'bundle install'
                     }
                 }
