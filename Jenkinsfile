@@ -46,7 +46,7 @@ pipeline {
 
         stage('Ruby Pipeline') {
             stages {
-                stage('Create DB') {
+                stage('01 - Create DB') {
                     environment {
                         RACK_ENV = 'test'
                     }
@@ -64,17 +64,17 @@ pipeline {
                         '''
                     }
                 }
-                stage('Install bundler') {
+                stage('02 - Install bundler') {
                     steps {
                         sh 'gem install bundler -v 2.7.1'
                     }
                 }
-                stage('Install gems') {
+                stage('03 - Install gems') {
                     steps {
                         sh 'bundle install'
                     }
                 }
-                stage('Unit Tests') {
+                stage('04 - Unit Tests') {
                     steps {
                         sh 'cp config_template.yml config.yml || true'
                         sh 'bundle exec rspec'
