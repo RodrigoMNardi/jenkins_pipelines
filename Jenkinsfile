@@ -1,8 +1,10 @@
 pipeline {
-    agent any
-
-    environment {
-        DOCKER_IMAGE = "ruby-rspec-tests"
+    agent {
+        dockerfile {
+            filename 'dockerfiles/ruby34/Dockerfile'
+            label ''
+            additionalBuildArgs ''
+        }
     }
 
     stages {
@@ -12,21 +14,9 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    docker.build("${DOCKER_IMAGE}")
-                }
-            }
-        }
-
         stage('Run Unit Tests') {
             steps {
-                script {
-                    docker.image("${DOCKER_IMAGE}").inside {
-                        sh 'bundle exec rspec'
-                    }
-                }
+                sh 'bundle exec rspec'
             }
         }
     }
