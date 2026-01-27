@@ -1,18 +1,30 @@
 pipeline {
-    agent {
-        docker {
-            image 'ruby:3.4'
-        }
-    }
+    agent any
 
     environment {
         POSTGRES_USER = 'postgres'
         POSTGRES_PASSWORD = 'postgres'
         POSTGRES_DB = 'postgres'
-        POSTGRES_HOST = 'localhost'
+        POSTGRES_HOST = 'postgres'
+        DATABASE_URL = 'postgres://postgres:postgres@postgres:5432'
     }
 
     stages {
+        stage('Prepare Network') {
+            steps {
+                sh 'docker network create jenkins-net || true'
+            }
+        }
+
+        stage('Start Postgres') {
+            steps {
+                sh '''
+                  docker run --name jenkins-postgres --network jenkins-net -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres:15
+                  sleep 15
+                '''
+            }
+        }
+
         stage('Checkout') {
             steps {
                 deleteDir()
@@ -25,30 +37,38 @@ pipeline {
         }
 
         stage('Install bundler') {
+            agent {
+                docker {
+                    image 'ruby:3.4'
+                    args '--network jenkins-net'
+                }
+            }
             steps {
                 sh 'gem install bundler -v 2.7.1'
             }
         }
 
         stage('Install gems') {
+            agent {
+                docker {
+                    image 'ruby:3.4'
+                    args '--network jenkins-net'
+                }
+            }
             steps {
                 sh 'bundle install'
             }
         }
 
-        stage('Start Postgres') {
-            steps {
-                sh '''
-                  docker run --name jenkins-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -p 5432:5432 -d postgres:15
-                  sleep 15
-                '''
-            }
-        }
-
         stage('Create DB') {
+            agent {
+                docker {
+                    image 'ruby:3.4'
+                    args '--network jenkins-net'
+                }
+            }
             environment {
                 RACK_ENV = 'test'
-                DATABASE_URL = 'postgres://postgres:postgres@localhost'
             }
             steps {
                 sh '''
@@ -66,6 +86,12 @@ pipeline {
         }
 
         stage('Unit Tests') {
+            agent {
+                docker {
+                    image 'ruby:3.4'
+                    args '--network jenkins-net'
+                }
+            }
             steps {
                 sh 'cp config_template.yml config.yml'
                 sh 'bundle exec rspec'
@@ -76,6 +102,7 @@ pipeline {
     post {
         always {
             sh 'docker rm -f jenkins-postgres || true'
+            sh 'docker network rm jenkins-net || true'
             echo 'Pipeline done'
         }
         success {
