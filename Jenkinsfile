@@ -69,7 +69,7 @@ pipeline {
                 }
                 stage('04 - Unit Tests') {
                     environment {
-                        DATABASE_URL = 'postgres://postgres:postgres@localhost:5432'
+                        DATABASE_URL = 'postgres://postgres:postgres@172.17.0.1:5432'
                     }
                     steps {
                         sh 'cp config_template.yml config.yml || true'
