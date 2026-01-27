@@ -1,11 +1,5 @@
 pipeline {
-    agent {
-        dockerfile {
-            filename 'dockerfiles/ruby34/Dockerfile'
-            label ''
-            additionalBuildArgs ''
-        }
-    }
+    agent any
 
     stages {
         stage('Checkout') {
@@ -14,9 +8,15 @@ pipeline {
             }
         }
 
-        stage('Run Unit Tests') {
+        stage('Build and Test in Docker') {
             steps {
-                sh 'bundle exec rspec'
+                script {
+                    def app = docker.build('ruby34-test', 'dockerfiles/ruby34')
+                    app.inside {
+                        sh 'bundle install'
+                        sh 'bundle exec rspec'
+                    }
+                }
             }
         }
     }
