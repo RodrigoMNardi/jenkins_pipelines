@@ -20,10 +20,17 @@ pipeline {
                     image 'ruby:3.4'
                 }
             }
-            steps {
-                sh 'gem install bundler'
-                sh 'bundle install --lockfile'
-                sh 'bundle exec rspec'
+            stage('Install bundler and dependencies') {
+              steps {
+                  sh 'gem install bundler'
+                  sh 'bundle install'
+              }
+            }
+
+            stage('Unit Tests') {
+              steps {
+                  sh 'bundle exec rspec'
+              }
             }
         }
     }
