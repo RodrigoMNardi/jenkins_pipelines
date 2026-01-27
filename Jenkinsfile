@@ -17,11 +17,11 @@ pipeline {
         stage('Install bundler and dependencies') {
             agent {
                 docker {
-                    image 'ruby:3.3'
+                    image 'ruby:3.4'
                 }
             }
             steps {
-                sh 'gem install bundler'
+                sh 'gem install bundler -v 2.7.1'
                 sh 'bundle install'
             }
         }
