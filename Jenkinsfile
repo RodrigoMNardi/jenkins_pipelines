@@ -17,7 +17,7 @@ pipeline {
         stage('Install bundler and dependencies') {
             agent {
                 docker {
-                    image 'ruby:3.4'
+                    image 'ruby:3.3'
                 }
             }
             steps {
