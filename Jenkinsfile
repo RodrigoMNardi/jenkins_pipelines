@@ -17,11 +17,17 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            agent {
-                docker {
-                    image 'ruby:3.4'
+                axes {
+                    axis {
+                        name 'RUBY_VERSION'
+                        values '3.4', '3.3'
+                    }
                 }
-            }
+                agent {
+                    docker {
+                        image "ruby:${RUBY_VERSION}"
+                    }
+                }
             steps {
                 deleteDir()
                 checkout([
@@ -33,11 +39,7 @@ pipeline {
         }
 
         stage('Start Postgres') {
-            agent {
-                docker {
-                    image 'ruby:3.4'
-                }
-            }
+            agent none
             steps {
                 sh '''
                   docker run --name jenkins-postgres -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres:15
