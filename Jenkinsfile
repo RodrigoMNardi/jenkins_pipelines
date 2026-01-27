@@ -33,6 +33,11 @@ pipeline {
                     docker exec jenkins-postgres pg_isready -U postgres && break
                     sleep 1
                   done
+
+                  if ! docker exec jenkins-postgres pg_isready -U postgres; then
+                    echo "Postgres did not become ready in time!"
+                    exit 1
+                  fi
                 '''
             }
         }
