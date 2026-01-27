@@ -73,7 +73,7 @@ pipeline {
                     }
                     steps {
                         sh 'cp config_template.yml config.yml || true'
-                        sh 'bundle exec rspec'
+                        sh 'DATABASE_URL=postgres://postgres:postgres@172.17.0.1:5432  bundle exec rspec'
                     }
                 }
             }
