@@ -1,6 +1,6 @@
 properties([
     parameters([
-        string(name: 'GIT_REF', defaultValue: 'feature/jenkins', description: 'Branch, tag or commit SHA')
+        string(name: 'GIT_REF', defaultValue: 'feature/jenkins', description: 'Branch, tag or commit SHA to build')
     ])
 ])
 
