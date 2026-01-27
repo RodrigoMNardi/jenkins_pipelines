@@ -72,6 +72,7 @@ pipeline {
                         DATABASE_URL = 'postgres://postgres:postgres@172.17.0.1:5432'
                     }
                     steps {
+                        sed -i 's/localhost/172.17.0.1/g' config/database.yml
                         sh 'cp config_template.yml config.yml || true'
                         sh 'bundle exec rspec'
                     }
