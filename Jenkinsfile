@@ -1,3 +1,9 @@
+properties([
+    parameters([
+        string(name: 'GIT_REF', defaultValue: 'feature/jenkins', description: 'Branch, tag or commit SHA')
+    ])
+])
+
 pipeline {
     agent {
         docker {
@@ -19,7 +25,7 @@ pipeline {
                 deleteDir()
                 checkout([
                     $class: 'GitSCM',
-                    branches: [[name: 'feature/jenkins']],
+                    branches: [[name: params.GIT_REF]],
                     userRemoteConfigs: [[url: 'https://github.com/RodrigoMNardi/netdef-ci-github-app.git']]
                 ])
             }
