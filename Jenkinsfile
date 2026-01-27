@@ -64,6 +64,26 @@ username: postgres
 password: postgres
 encoding: utf8
 pool: 10
+timeout: 5000'
+
+production:
+adapter: postgresql
+host: 172.17.0.1
+database: postgres
+username: postgres
+password: postgres
+encoding: utf8
+pool: 10
+timeout: 5000'
+
+development:
+adapter: postgresql
+host: 172.17.0.1
+database: postgres
+username: postgres
+password: postgres
+encoding: utf8
+pool: 10
 timeout: 5000' > config/database.yml
                           cp db/schema.rb db/schema.rb.bak
                           bundle exec rake db:migrate:reset
