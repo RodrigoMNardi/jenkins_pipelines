@@ -7,7 +7,7 @@ pipeline {
     }
 
     stages {
-        stage('Checkout código do projeto') {
+        stage('Checkout') {
             steps {
                 deleteDir() // Limpa o workspace
                 checkout([
