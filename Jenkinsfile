@@ -16,19 +16,19 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-          matrix {
+        matrix {
             axes {
                 axis {
                     name 'RUBY_VERSION'
                     values '3.4', '3.3'
                 }
             }
-            agent {
-                docker {
-                    image "ruby:${RUBY_VERSION}"
-                }
-            }
+            stage('Checkout') {
+              agent {
+                  docker {
+                      image "ruby:${RUBY_VERSION}"
+                  }
+              }
             steps {
                 deleteDir()
                 checkout([
