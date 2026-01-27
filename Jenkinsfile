@@ -64,7 +64,7 @@ username: postgres
 password: postgres
 encoding: utf8
 pool: 10
-timeout: 5000'
+timeout: 5000
 
 production:
 adapter: postgresql
@@ -74,7 +74,7 @@ username: postgres
 password: postgres
 encoding: utf8
 pool: 10
-timeout: 5000'
+timeout: 5000
 
 development:
 adapter: postgresql
