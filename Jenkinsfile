@@ -22,7 +22,7 @@ pipeline {
             }
             steps {
                 sh 'gem install bundler'
-                sh 'bundle install'
+                sh 'bundle install --lockfile'
                 sh 'bundle exec rspec'
             }
         }
