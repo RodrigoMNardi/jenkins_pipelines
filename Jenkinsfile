@@ -105,6 +105,7 @@ pipeline {
                         }
                         steps {
                             sh 'cp config_template.yml config.yml || true'
+                            sh 'echo config/database.yml'
                             sh 'bundle exec rspec'
                         }
                     }
