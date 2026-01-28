@@ -38,9 +38,9 @@ pipeline {
                                     '3.4': '5434',
                                     '4.0.1': '5435'
                                 ]
-                                def port = portMap[RUBY_VERSION]
+                                def port = portMap[RUBY_VERSION.toString()]
                                 env.POSTGRES_PORT = port
-                                env.POSTGRES_CONTAINER = "jenkins-postgres-${RUBY_VERSION.replace('.', '')}"
+                                env.POSTGRES_CONTAINER = "jenkins-postgres-${RUBY_VERSION.toString().replace('.', '-')}"
                                 env.DATABASE_URL = "postgres://postgres:postgres@172.17.0.1:${port}"
                                 echo "RUBY_VERSION: ${RUBY_VERSION} | POSTGRES_PORT: ${port}"
                             }
