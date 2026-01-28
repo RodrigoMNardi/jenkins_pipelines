@@ -40,8 +40,9 @@ pipeline {
                                 ]
                                 def port = portMap[RUBY_VERSION.toString()]
                                 def uuid = UUID.randomUUID().toString()
+                                def buildId = env.BUILD_ID ?: env.BUILD_NUMBER
                                 env.POSTGRES_PORT = port
-                                env.POSTGRES_CONTAINER = "jenkins-postgres-${RUBY_VERSION.toString().replace('.', '-')}-${uuid}"
+                                env.POSTGRES_CONTAINER = "jenkins-postgres-${RUBY_VERSION.toString().replace('.', '-')}-${buildId}-${uuid}"
                                 env.DATABASE_URL = "postgres://postgres:postgres@172.17.0.1:${port}"
                                 echo "RUBY_VERSION: ${RUBY_VERSION} | POSTGRES_PORT: ${port} | POSTGRES_CONTAINER: ${env.POSTGRES_CONTAINER}"
                             }
@@ -113,14 +114,15 @@ pipeline {
                 post {
                     always {
                         script {
-                            def containerName = "jenkins-postgres-${RUBY_VERSION.toString().replace('.', '-')}"
+                            def buildId = env.BUILD_ID ?: env.BUILD_NUMBER
+                            def prefix = "jenkins-postgres-${RUBY_VERSION.toString().replace('.', '-')}-${buildId}-"
                             sh """
-                                echo "[CLEANUP] Removing container: $containerName if exists"
-                                if docker ps -a --format '{{.Names}}' | grep -wq "$containerName"; then
-                                  docker stop $containerName || true
-                                  docker rm -f $containerName || true
+                                echo "[CLEANUP] Removing containers with prefix: $prefix"
+                                for c in $(docker ps -a --format '{{.Names}}' | grep "^$prefix"); do
+                                  docker stop $c || true
+                                  docker rm -f $c || true
                                   sleep 2
-                                fi
+                                done
                             """
                         }
                     }
