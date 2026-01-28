@@ -32,7 +32,6 @@ pipeline {
                 stages {
                     stage('Start Postgres') {
                         steps {
-                            echo "RUBY_VERSION: ${RUBY_VERSION} | POSTGRES_PORT: ${portMap[RUBY_VERSION]}"
                             script {
                                 def portMap = [
                                     '3.3': '5433',
@@ -43,6 +42,7 @@ pipeline {
                                 env.POSTGRES_PORT = port
                                 env.POSTGRES_CONTAINER = "jenkins-postgres-${RUBY_VERSION.replace('.', '')}"
                                 env.DATABASE_URL = "postgres://postgres:postgres@172.17.0.1:${port}"
+                                echo "RUBY_VERSION: ${RUBY_VERSION} | POSTGRES_PORT: ${port}"
                             }
                             sh '''
                               if docker ps -a --format '{{.Names}}' | grep -wq "$POSTGRES_CONTAINER"; then
