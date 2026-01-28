@@ -41,7 +41,11 @@ pipeline {
                                 env.DATABASE_URL = dbUrl
                             }
                             sh '''
-                              docker rm -f $POSTGRES_CONTAINER || true
+                              if docker ps -a --format '{{.Names}}' | grep -wq "$POSTGRES_CONTAINER"; then
+                                docker stop $POSTGRES_CONTAINER || true
+                                docker rm -f $POSTGRES_CONTAINER || true
+                                sleep 2
+                              fi
                               docker run --name $POSTGRES_CONTAINER -p $POSTGRES_PORT:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres:15
                               for i in {1..60}; do
                                 docker exec $POSTGRES_CONTAINER pg_isready -U postgres && break
