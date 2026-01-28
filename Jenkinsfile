@@ -39,10 +39,11 @@ pipeline {
                                     '4.0.1': '5435'
                                 ]
                                 def port = portMap[RUBY_VERSION.toString()]
+                                def uuid = UUID.randomUUID().toString()
                                 env.POSTGRES_PORT = port
-                                env.POSTGRES_CONTAINER = "jenkins-postgres-${RUBY_VERSION.toString().replace('.', '-')}"
+                                env.POSTGRES_CONTAINER = "jenkins-postgres-${RUBY_VERSION.toString().replace('.', '-')}-${uuid}"
                                 env.DATABASE_URL = "postgres://postgres:postgres@172.17.0.1:${port}"
-                                echo "RUBY_VERSION: ${RUBY_VERSION} | POSTGRES_PORT: ${port}"
+                                echo "RUBY_VERSION: ${RUBY_VERSION} | POSTGRES_PORT: ${port} | POSTGRES_CONTAINER: ${env.POSTGRES_CONTAINER}"
                             }
                             sh '''
                               if docker ps -a --format '{{.Names}}' | grep -wq "$POSTGRES_CONTAINER"; then
