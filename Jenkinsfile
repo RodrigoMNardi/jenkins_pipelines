@@ -32,10 +32,11 @@ pipeline {
                 stages {
                     stage('Start Postgres') {
                         steps {
+                            echo "RUBY_VERSION: ${RUBY_VERSION} | POSTGRES_PORT: ${portMap[RUBY_VERSION]}"
                             script {
                                 def portMap = [
-                                    '3.4': '5433',
-                                    '3.3': '5434',
+                                    '3.3': '5433',
+                                    '3.4': '5434',
                                     '4.0.1': '5435'
                                 ]
                                 def port = portMap[RUBY_VERSION]
