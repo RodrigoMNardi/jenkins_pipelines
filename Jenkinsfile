@@ -29,22 +29,26 @@ pipeline {
                         image "ruby:${RUBY_VERSION}"
                     }
                 }
+                environment {
+                    POSTGRES_PORT = "${['3.2':'5433','3.4':'5434','4.0.1':'5435'][RUBY_VERSION]}"
+                    POSTGRES_CONTAINER = "jenkins-postgres-${RUBY_VERSION.replace('.', '-')}-${env.BUILD_ID ?: env.BUILD_NUMBER}-${UUID.randomUUID().toString()}"
+                    POSTGRES_VOLUME = "jenkins-pgdata-${RUBY_VERSION.replace('.', '-')}-${env.BUILD_ID ?: env.BUILD_NUMBER}"
+                    DATABASE_URL = "postgres://postgres:postgres@172.17.0.1:${['3.2':'5433','3.4':'5434','4.0.1':'5435'][RUBY_VERSION]}"
+                }
                 stages {
                     stage('Start Postgres') {
-                        environment {
-                            POSTGRES_PORT = "${['3.2':'5433','3.4':'5434','4.0.1':'5435'][RUBY_VERSION]}"
-                            POSTGRES_CONTAINER = "jenkins-postgres-${RUBY_VERSION.replace('.', '-')}-${env.BUILD_ID ?: env.BUILD_NUMBER}-${UUID.randomUUID().toString()}"
-                            DATABASE_URL = "postgres://postgres:postgres@172.17.0.1:${['3.2':'5433','3.4':'5434','4.0.1':'5435'][RUBY_VERSION]}"
-                        }
                         steps {
-                            echo "RUBY_VERSION: ${RUBY_VERSION} | POSTGRES_PORT: ${env.POSTGRES_PORT} | POSTGRES_CONTAINER: ${env.POSTGRES_CONTAINER}"
+                            echo "RUBY_VERSION: ${RUBY_VERSION} | POSTGRES_PORT: ${env.POSTGRES_PORT} | POSTGRES_CONTAINER: ${env.POSTGRES_CONTAINER} | POSTGRES_VOLUME: ${env.POSTGRES_VOLUME}"
                             sh '''
                               if docker ps -a --format '{{.Names}}' | grep -wq "$POSTGRES_CONTAINER"; then
                                 docker stop $POSTGRES_CONTAINER || true
                                 docker rm -f $POSTGRES_CONTAINER || true
                                 sleep 2
                               fi
-                              docker run --name $POSTGRES_CONTAINER -p $POSTGRES_PORT:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres:15
+                              if docker volume ls -q | grep -wq "$POSTGRES_VOLUME"; then
+                                docker volume rm -f $POSTGRES_VOLUME || true
+                              fi
+                              docker run --name $POSTGRES_CONTAINER -p $POSTGRES_PORT:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -v $POSTGRES_VOLUME:/var/lib/postgresql/data -d postgres:15
                               for i in {1..60}; do
                                 docker exec $POSTGRES_CONTAINER pg_isready -U postgres && break
                                 sleep 1
@@ -110,6 +114,7 @@ pipeline {
                         script {
                             def buildId = env.BUILD_ID ?: env.BUILD_NUMBER
                             def prefix = "jenkins-postgres-${RUBY_VERSION.toString().replace('.', '-')}-${buildId}-"
+                            def volPrefix = "jenkins-pgdata-${RUBY_VERSION.toString().replace('.', '-')}-${buildId}-"
                             def cleanupCmd = """
                                 echo "[CLEANUP] Removing containers with prefix: ${prefix}"
                                 for c in \$(docker ps -a --format '{{.Names}}' | grep "^${prefix}"); do
@@ -117,8 +122,8 @@ pipeline {
                                   docker rm -f \$c || true
                                   sleep 2
                                 done
-                                # Remove volumes associados ao prefixo
-                                for v in \$(docker volume ls -q | grep "${prefix}"); do
+                                echo "[CLEANUP] Removing volumes with prefix: ${volPrefix}"
+                                for v in \$(docker volume ls -q | grep "^${volPrefix}"); do
                                   docker volume rm -f \$v || true
                                 done
                             """
