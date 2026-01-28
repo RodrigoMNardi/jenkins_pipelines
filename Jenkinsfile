@@ -32,9 +32,9 @@ pipeline {
                 stages {
                     stage('Start Postgres') {
                         environment {
-                            POSTGRES_PORT = "${['3.3':'5433','3.4':'5434','4.0.1':'5435'][RUBY_VERSION]}"
+                            POSTGRES_PORT = "${['3.2':'5433','3.4':'5434','4.0.1':'5435'][RUBY_VERSION]}"
                             POSTGRES_CONTAINER = "jenkins-postgres-${RUBY_VERSION.replace('.', '-')}-${env.BUILD_ID ?: env.BUILD_NUMBER}-${UUID.randomUUID().toString()}"
-                            DATABASE_URL = "postgres://postgres:postgres@172.17.0.1:${['3.3':'5433','3.4':'5434','4.0.1':'5435'][RUBY_VERSION]}"
+                            DATABASE_URL = "postgres://postgres:postgres@172.17.0.1:${['3.2':'5433','3.4':'5434','4.0.1':'5435'][RUBY_VERSION]}"
                         }
                         steps {
                             echo "RUBY_VERSION: ${RUBY_VERSION} | POSTGRES_PORT: ${env.POSTGRES_PORT} | POSTGRES_CONTAINER: ${env.POSTGRES_CONTAINER}"
@@ -75,9 +75,9 @@ pipeline {
                     stage('03 - Create DB') {
                         environment {
                             RACK_ENV = 'test'
-                            POSTGRES_PORT = "${['3.3':'5433','3.4':'5434','4.0.1':'5435'][RUBY_VERSION]}"
+                            POSTGRES_PORT = "${['3.2':'5433','3.4':'5434','4.0.1':'5435'][RUBY_VERSION]}"
                             POSTGRES_CONTAINER = "jenkins-postgres-${RUBY_VERSION.replace('.', '-')}-${env.BUILD_ID ?: env.BUILD_NUMBER}-${UUID.randomUUID().toString()}"
-                            DATABASE_URL = "postgres://postgres:postgres@172.17.0.1:${['3.3':'5433','3.4':'5434','4.0.1':'5435'][RUBY_VERSION]}"
+                            DATABASE_URL = "postgres://postgres:postgres@172.17.0.1:${['3.2':'5433','3.4':'5434','4.0.1':'5435'][RUBY_VERSION]}"
                         }
                         steps {
                             sh '''
