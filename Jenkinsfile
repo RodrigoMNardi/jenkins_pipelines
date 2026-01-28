@@ -87,7 +87,7 @@ pipeline {
                             sh '''
                               cp database_template.yml config/database.yml
                               sed -i "s/localhost/172.17.0.1/g" config/database.yml
-                              sed -i "s/5432/$POSTGRES_PORT/g" config/database.yml
+                              sed -i "s/timeout: 5000/port: $POSTGRES_PORT/g" config/database.yml
                               cp db/schema.rb db/schema.rb.bak
                               bundle exec rake db:migrate:reset
                               if ! cmp db/schema.rb db/schema.rb.bak >/dev/null 2>&1; then
