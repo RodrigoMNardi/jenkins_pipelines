@@ -22,6 +22,9 @@ pipeline {
                     axis {
                         name 'RUBY_VERSION'
                         values '3.4', '3.3', '4.0.1'
+
+                        name 'POSTGRES_PORT'
+                        values '5433', '5434', '5435'
                     }
                 }
                 agent {
@@ -33,7 +36,12 @@ pipeline {
                     stage('Start Postgres') {
                         steps {
                             script {
-                                def port = RUBY_VERSION == '3.4' ? '5433' : (RUBY_VERSION == '3.3' ? '5434' : '5435')
+                                def portMap = [
+                                    '3.4': '5433',
+                                    '3.3': '5434',
+                                    '4.0.1': '5435'
+                                ]
+                                def port = portMap[RUBY_VERSION]
                                 def container = "jenkins-postgres-${RUBY_VERSION.replace('.', '')}"
                                 def dbUrl = "postgres://postgres:postgres@172.17.0.1:${port}"
                                 env.POSTGRES_PORT = port
