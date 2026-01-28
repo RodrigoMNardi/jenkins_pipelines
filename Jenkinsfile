@@ -110,7 +110,16 @@ pipeline {
                 }
                 post {
                     always {
-                        sh '[ -n "$POSTGRES_CONTAINER" ] && docker rm -f $POSTGRES_CONTAINER || true'
+                        sh '''
+                          echo "[CLEANUP] Removing container: $POSTGRES_CONTAINER if exists"
+                          if [ -n "$POSTGRES_CONTAINER" ]; then
+                            if docker ps -a --format '{{.Names}}' | grep -wq "$POSTGRES_CONTAINER"; then
+                              docker stop $POSTGRES_CONTAINER || true
+                              docker rm -f $POSTGRES_CONTAINER || true
+                              sleep 2
+                            fi
+                          fi
+                        '''
                     }
                 }
             }
