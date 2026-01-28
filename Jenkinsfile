@@ -116,14 +116,15 @@ pipeline {
                         script {
                             def buildId = env.BUILD_ID ?: env.BUILD_NUMBER
                             def prefix = "jenkins-postgres-${RUBY_VERSION.toString().replace('.', '-')}-${buildId}-"
-                            sh """
-                                echo "[CLEANUP] Removing containers with prefix: $prefix"
-                                for c in $(docker ps -a --format '{{.Names}}' | grep "^$prefix"); do
-                                  docker stop $c || true
-                                  docker rm -f $c || true
+                            def cleanupCmd = """
+                                echo \"[CLEANUP] Removing containers with prefix: ${prefix}\"
+                                for c in \\$(docker ps -a --format '{{.Names}}' | grep \"^${prefix}\"); do
+                                  docker stop \\$c || true
+                                  docker rm -f \\$c || true
                                   sleep 2
                                 done
                             """
+                            sh cleanupCmd
                         }
                     }
                 }
