@@ -110,7 +110,7 @@ pipeline {
                 }
                 post {
                     always {
-                        sh 'docker rm -f $POSTGRES_CONTAINER || true'
+                        sh '[ -n "$POSTGRES_CONTAINER" ] && docker rm -f $POSTGRES_CONTAINER || true'
                     }
                 }
             }
