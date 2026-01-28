@@ -110,16 +110,17 @@ pipeline {
                 }
                 post {
                     always {
-                        sh '''
-                          echo "[CLEANUP] Removing container: $POSTGRES_CONTAINER if exists"
-                          if [ -n "$POSTGRES_CONTAINER" ]; then
-                            if docker ps -a --format '{{.Names}}' | grep -wq "$POSTGRES_CONTAINER"; then
-                              docker stop $POSTGRES_CONTAINER || true
-                              docker rm -f $POSTGRES_CONTAINER || true
-                              sleep 2
-                            fi
-                          fi
-                        '''
+                        script {
+                            def containerName = "jenkins-postgres-${RUBY_VERSION.toString().replace('.', '-')}"
+                            sh """
+                                echo "[CLEANUP] Removing container: $containerName if exists"
+                                if docker ps -a --format '{{.Names}}' | grep -wq "$containerName"; then
+                                  docker stop $containerName || true
+                                  docker rm -f $containerName || true
+                                  sleep 2
+                                fi
+                            """
+                        }
                     }
                 }
             }
