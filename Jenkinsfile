@@ -21,7 +21,7 @@ pipeline {
                 axes {
                     axis {
                         name 'RUBY_VERSION'
-                        values '3.4', '3.3'
+                        values '3.4', '3.3', '4.0.1'
                     }
                 }
                 agent {
