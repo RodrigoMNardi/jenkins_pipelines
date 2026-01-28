@@ -24,6 +24,7 @@ pipeline {
                         values '3.2', '3.4', '4.0.1'
                     }
                 }
+                displayName("Ruby ${RUBY_VERSION}")
                 agent {
                     docker {
                         image "ruby:${RUBY_VERSION}"
