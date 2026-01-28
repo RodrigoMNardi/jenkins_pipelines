@@ -29,14 +29,17 @@ pipeline {
                         image "ruby:${RUBY_VERSION}"
                     }
                 }
-                environment {
-                    POSTGRES_PORT = RUBY_VERSION == '3.4' ? '5433' : (RUBY_VERSION == '3.3' ? '5434' : '5435')
-                    POSTGRES_CONTAINER = "jenkins-postgres-${RUBY_VERSION.replace('.', '')}"
-                    DATABASE_URL = "postgres://postgres:postgres@172.17.0.1:${POSTGRES_PORT}"
-                }
                 stages {
                     stage('Start Postgres') {
                         steps {
+                            script {
+                                def port = RUBY_VERSION == '3.4' ? '5433' : (RUBY_VERSION == '3.3' ? '5434' : '5435')
+                                def container = "jenkins-postgres-${RUBY_VERSION.replace('.', '')}"
+                                def dbUrl = "postgres://postgres:postgres@172.17.0.1:${port}"
+                                env.POSTGRES_PORT = port
+                                env.POSTGRES_CONTAINER = container
+                                env.DATABASE_URL = dbUrl
+                            }
                             sh '''
                               docker rm -f $POSTGRES_CONTAINER || true
                               docker run --name $POSTGRES_CONTAINER -p $POSTGRES_PORT:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres:15
@@ -89,7 +92,7 @@ pipeline {
                     }
                     stage('04 - Unit Tests') {
                         environment {
-                            DATABASE_URL = "postgres://postgres:postgres@172.17.0.1:${POSTGRES_PORT}"
+                            DATABASE_URL = "${env.DATABASE_URL}"
                         }
                         steps {
                             sh 'cp config_template.yml config.yml || true'
