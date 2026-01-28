@@ -30,7 +30,7 @@ pipeline {
                     }
                 }
                 environment {
-                    POSTGRES_PORT = "${RUBY_VERSION == '3.4' ? '5433' : '5434'}"
+                    POSTGRES_PORT = RUBY_VERSION == '3.4' ? '5433' : (RUBY_VERSION == '3.3' ? '5434' : '5435')
                     POSTGRES_CONTAINER = "jenkins-postgres-${RUBY_VERSION.replace('.', '')}"
                     DATABASE_URL = "postgres://postgres:postgres@172.17.0.1:${POSTGRES_PORT}"
                 }
