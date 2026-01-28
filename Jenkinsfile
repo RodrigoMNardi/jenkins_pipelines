@@ -16,7 +16,7 @@ pipeline {
     }
 
     stages {
-        stage("Ruby ${RUBY_VERSION} Pipeline") {
+        stage("Ruby Pipeline") {
             matrix {
                 axes {
                     axis {
@@ -36,7 +36,7 @@ pipeline {
                     DATABASE_URL = "postgres://postgres:postgres@172.17.0.1:${['3.2':'5433','3.4':'5434','4.0.1':'5435'][RUBY_VERSION]}"
                 }
                 stages {
-                    stage("Start Postgres (${RUBY_VERSION})") {
+                    stage("Start Postgres") {
                         steps {
                             echo "RUBY_VERSION: ${RUBY_VERSION} | POSTGRES_PORT: ${env.POSTGRES_PORT} | POSTGRES_CONTAINER: ${env.POSTGRES_CONTAINER} | POSTGRES_VOLUME: ${env.POSTGRES_VOLUME}"
                             sh '''
@@ -76,7 +76,7 @@ pipeline {
                             sh 'bundle install'
                         }
                     }
-                    stage("03 - Create DB (${RUBY_VERSION})") {
+                    stage("03 - Create DB") {
                         environment {
                             RACK_ENV = 'test'
                             POSTGRES_PORT = "${['3.2':'5433','3.4':'5434','4.0.1':'5435'][RUBY_VERSION]}"
@@ -99,7 +99,7 @@ pipeline {
                             '''
                         }
                     }
-                    stage("04 - Unit Tests (${RUBY_VERSION})") {
+                    stage("04 - Unit Tests") {
                         environment {
                             DATABASE_URL = "${env.DATABASE_URL}"
                         }
