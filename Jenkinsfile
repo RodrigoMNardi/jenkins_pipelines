@@ -1,3 +1,15 @@
+/*
+ * SPDX-License-Identifier: BSD-2-Clause.
+ *
+ * Jenkinsfile
+ * Part of NetDEF CI System
+ *
+ * Copyright (c) 2026 by
+ * Network Device Education Foundation, Inc. ("NetDEF")
+ *
+ * Todos os direitos reservados.
+ */
+
 properties([
     parameters([
         string(name: 'GIT_REF', defaultValue: 'feature/jenkins', description: 'Branch, tag or commit SHA to build')
