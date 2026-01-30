@@ -7,7 +7,6 @@
  * Copyright (c) 2026 by
  * Network Device Education Foundation, Inc. ("NetDEF")
  *
- * Todos os direitos reservados.
  */
 
 properties([
